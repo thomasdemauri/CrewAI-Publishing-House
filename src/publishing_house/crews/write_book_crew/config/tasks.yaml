@@ -1,0 +1,20 @@
+write_book:
+  description: >
+    Write a comprehensive chapter of the book based on the outline book provided.
+
+    topic of the book: {topic}
+    Summary chapter: {chapter_summary}
+
+    Remember the outline book provided to help you write the chapter.
+    The outline contains the structure and key points for each chapter, which will guide you in writing a well-organized and coherent chapter.
+    outline_book: {book_outline}
+
+    Book title: {title}
+
+    The chapter must contain 3000 words or less, and should be well-structured.
+
+    The goals of the book are: {goals}
+  expected_output: >
+    A well-written chapter of the book that adheres to the 
+    provided outline and effectively conveys the key points and insights related to the chapter topic.
+  agent: writer

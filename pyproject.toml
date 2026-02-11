@@ -1,0 +1,24 @@
+[project]
+name = "publishing_house"
+version = "0.1.0"
+description = "publishing_house using crewAI"
+authors = [{ name = "Your Name", email = "you@example.com" }]
+requires-python = ">=3.10,<3.14"
+dependencies = [
+    "crewai[tools]==1.9.2"
+]
+
+[project.scripts]
+publishing_house = "publishing_house.main:run"
+run_crew = "publishing_house.main:run"
+train = "publishing_house.main:train"
+replay = "publishing_house.main:replay"
+test = "publishing_house.main:test"
+run_with_trigger = "publishing_house.main:run_with_trigger"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.crewai]
+type = "crew"

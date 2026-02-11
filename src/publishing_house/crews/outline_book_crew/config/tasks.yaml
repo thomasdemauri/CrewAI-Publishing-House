@@ -1,0 +1,25 @@
+research_topic:
+  description: >
+    Research and gather information about {topic} to gather the most
+    important and relevant information that will be used to create a comprehensive book outline.
+
+    Here is some additional information about the user's desired goals for the book:
+    {goals}
+  expected_output: >
+    A well-researched document containing key information, facts, and insights about {topic},
+    organized in a way that highlights the most important aspects to be included in the book outline.
+  agent: researcher
+
+generate_outline:
+  description: >
+    Create a detailed and organized book outline based on the research provided by the researcher,
+    ensuring that the structure is logical and engaging for readers.
+
+    It's important to make sure you do not duplicate any chapters or sections that are already included in the outline.
+
+    Here is some additional information about the user's desired goals for the book:
+    {goals}
+  expected_output: >
+    A comprehensive book outline that includes chapter titles and a brief summary of each section,
+    structured in a way that guides the writing process and ensures a cohesive and compelling final product.
+  agent: outliner
