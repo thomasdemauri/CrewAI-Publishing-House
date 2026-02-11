@@ -20,7 +20,7 @@ class WriteBookCrew:
     def writer(self) -> Agent:
         return Agent(
             config=self.agents_config['writer'], # type: ignore[index]
-            verbose=True,
+            verbose=False,
             tools=[]
         )
     
@@ -28,7 +28,7 @@ class WriteBookCrew:
     def write_book(self) -> Task:
         return Task(
             config=self.tasks_config['write_book'], # type: ignore[index]
-            agent=self.writer(),
+            agent=self.writer(), # type: ignore[index]
             output_pydantic=ChapterContent
         )
     
@@ -38,5 +38,5 @@ class WriteBookCrew:
             agents=self.agents, # Automatically created by the @agent decorator
             tasks=self.tasks, # Automatically created by the @task decorator
             process=Process.sequential,
-            verbose=True,
+            verbose=False,
         )

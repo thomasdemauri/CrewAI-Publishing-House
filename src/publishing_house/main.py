@@ -1,5 +1,6 @@
 
 import asyncio
+import re
 from typing import List
 from uuid import uuid4
 from crewai.flow.flow import Flow, listen, start
@@ -21,6 +22,13 @@ class BookState(BaseModel):
 class BookFlow(Flow[BookState]):
     initial_state = BookState
 
+    @staticmethod
+    def _sanitize_filename(value: str) -> str:
+        # Replace characters invalid on Windows and normalize whitespace.
+        cleaned = re.sub(r'[<>:"/\\|?*]+', "_", value)
+        cleaned = re.sub(r"\s+", "_", cleaned).strip("._ ")
+        return cleaned or "book"
+
     @start()
     def generate_book_outline(self):
         print("Kickoff the Book Outline Crew")
@@ -30,7 +38,7 @@ class BookFlow(Flow[BookState]):
             .kickoff(inputs={"topic": self.state.topic, "goals": self.state.goals})
         )
 
-        chapters = output['chapters']
+        chapters = output['chapters'] # type: ignore[index]
         print(f"Output: {output}")
         print(f"Chapters: {chapters}")
 
@@ -56,8 +64,8 @@ class BookFlow(Flow[BookState]):
                         ]
                     })
             )
-            title = output['title']
-            content = output['content']
+            title = output['title'] # type: ignore[index]
+            content = output['content'] # type: ignore[index]
             chapter = ChapterContent(title=title, content=content)
             return chapter
 
@@ -77,15 +85,23 @@ class BookFlow(Flow[BookState]):
         book_content = ""
 
         for chapter in self.state.book:
+            print(f"Joining chapter: {chapter.title}\n")
+            print(f"Chapter content: {chapter.content}\n")
             book_content += f"# {chapter.title}\n\n{chapter.content}\n\n"
 
-        book_title = self.state.title.replace(" ", "_").lower()
-        filename = f"{book_title}.md"
+        book_title = self.state.title
+        safe_title = self._sanitize_filename(book_title)
+        filename = f"./{safe_title}.md"
 
         with open(filename, "w", encoding="utf-8") as f:
             f.write(book_content)
 
         print(f"Book saved as {filename}")
 
-flow = BookFlow()
-result = flow.kickoff()
+
+def run():
+    flow = BookFlow()
+    flow.kickoff()
+
+if __name__ == "__main__":
+    run()
