@@ -2287,10 +2287,14 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "crewai", extra = ["tools"] },
+    { name = "python-docx" },
 ]
 
 [package.metadata]
-requires-dist = [{ name = "crewai", extras = ["tools"], specifier = "==1.9.2" }]
+requires-dist = [
+    { name = "crewai", extras = ["tools"], specifier = "==1.9.2" },
+    { name = "python-docx", specifier = ">=1.2.0" },
+]
 
 [[package]]
 name = "py"

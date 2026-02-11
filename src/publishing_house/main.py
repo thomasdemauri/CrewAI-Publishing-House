@@ -1,12 +1,12 @@
 
 import asyncio
+import re
 from typing import List
 from uuid import uuid4
 from crewai.flow.flow import Flow, listen, start
+from docx import Document
 from dotenv import load_dotenv
 from pydantic import BaseModel, Field
-
-from publishing_house.crews.copy_to_a_document.copy_to_a_document_crew import copyToDocument
 from publishing_house.crews.outline_book_crew.outline_book_crew import OutlineBookCrew
 from publishing_house.crews.write_book_crew.write_book_crew import WriteBookCrew
 from publishing_house.types import ChapterContent, ChapterOutline
@@ -22,6 +22,13 @@ class BookState(BaseModel):
 class BookFlow(Flow[BookState]):
     initial_state = BookState
 
+    @staticmethod
+    def _sanitize_filename(value: str) -> str:
+        # Replace characters invalid on Windows and normalize whitespace.
+        cleaned = re.sub(r'[<>:"/\\|?*]+', "_", value)
+        cleaned = re.sub(r"\s+", "_", cleaned).strip("._ ")
+        return cleaned or "book"
+
     @start()
     def generate_book_outline(self):
         print("Kickoff the Book Outline Crew")
@@ -31,7 +38,7 @@ class BookFlow(Flow[BookState]):
             .kickoff(inputs={"topic": self.state.topic, "goals": self.state.goals})
         )
 
-        chapters = output['chapters']
+        chapters = output['chapters'] # type: ignore[index]
         print(f"Output: {output}")
         print(f"Chapters: {chapters}")
 
@@ -57,8 +64,8 @@ class BookFlow(Flow[BookState]):
                         ]
                     })
             )
-            title = output['title']
-            content = output['content']
+            title = output['title'] # type: ignore[index]
+            content = output['content'] # type: ignore[index]
             chapter = ChapterContent(title=title, content=content)
             return chapter
 
@@ -75,18 +82,21 @@ class BookFlow(Flow[BookState]):
 
     @listen(write_chapters)
     def save_as_a_document(self):
+        doc = Document()
 
-        book_content = [chapter.model_dump() for chapter in self.state.book]
+        safe_title = self._sanitize_filename(self.state.title)
+        file_path = f"./{safe_title}.docx"
 
-        output = (
-            copyToDocument()
-            .crew()
-            .kickoff(inputs={
-                "book_content": book_content,
-            })
-        )
-        
-        return output
+        for chapter in self.state.book:
+            title = chapter.title
+            content = chapter.content
+
+            doc.add_heading(title, level=1)
+            doc.add_paragraph(content)
+
+        doc.save(file_path)
+        return file_path
+
 
 def run():
     flow = BookFlow()

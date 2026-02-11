@@ -28,7 +28,7 @@ class WriteBookCrew:
     def write_book(self) -> Task:
         return Task(
             config=self.tasks_config['write_book'], # type: ignore[index]
-            agent=self.writer(),
+            agent=self.writer(), # type: ignore[index]
             output_pydantic=ChapterContent
         )
     
