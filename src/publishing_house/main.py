@@ -6,6 +6,7 @@ from crewai.flow.flow import Flow, listen, start
 from dotenv import load_dotenv
 from pydantic import BaseModel, Field
 
+from publishing_house.crews.copy_to_a_document.copy_to_a_document_crew import copyToDocument
 from publishing_house.crews.outline_book_crew.outline_book_crew import OutlineBookCrew
 from publishing_house.crews.write_book_crew.write_book_crew import WriteBookCrew
 from publishing_house.types import ChapterContent, ChapterOutline
@@ -73,19 +74,20 @@ class BookFlow(Flow[BookState]):
 
 
     @listen(write_chapters)
-    async def join_and_save_chapter(self):
-        book_content = ""
+    def save_as_a_document(self):
 
-        for chapter in self.state.book:
-            book_content += f"# {chapter.title}\n\n{chapter.content}\n\n"
+        book_content = [chapter.model_dump() for chapter in self.state.book]
 
-        book_title = self.state.title.replace(" ", "_").lower()
-        filename = f"{book_title}.md"
+        output = (
+            copyToDocument()
+            .crew()
+            .kickoff(inputs={
+                "book_content": book_content,
+            })
+        )
+        
+        return output
 
-        with open(filename, "w", encoding="utf-8") as f:
-            f.write(book_content)
-
-        print(f"Book saved as {filename}")
-
-flow = BookFlow()
-result = flow.kickoff()
+def run():
+    flow = BookFlow()
+    flow.kickoff()
