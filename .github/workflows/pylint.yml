@@ -18,8 +18,9 @@ jobs:
       uses: astral-sh/setup-uv@v3
     - name: Install dependencies
       run: |
-        uv pip install pylint
         uv sync
+        crewai install
+        uv add pylint
     - name: Analysing the code with pylint
       run: |
-        pylint $(git ls-files '*.py')
+        uv run pylint src
