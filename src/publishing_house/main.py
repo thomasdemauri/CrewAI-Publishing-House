@@ -98,6 +98,10 @@ class BookFlow(Flow[BookState]):
         return file_path
 
 
+
 def run():
     flow = BookFlow()
     flow.kickoff()
+
+if __name__ == "__main__":
+    run()

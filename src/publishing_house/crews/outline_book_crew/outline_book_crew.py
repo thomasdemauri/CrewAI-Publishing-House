@@ -20,7 +20,7 @@ class OutlineBookCrew:
     def researcher(self) -> Agent:
         return Agent(
             config=self.agents_config['researcher'], # type: ignore[index]
-            verbose=True,
+            verbose=False,
             tools=[SerperDevTool(), ScrapeWebsiteTool()]
         )
     
@@ -28,21 +28,21 @@ class OutlineBookCrew:
     def outliner(self) -> Agent:
         return Agent(
             config=self.agents_config['outliner'], # type: ignore[index]
-            verbose=True
+            verbose=False
         )
     
     @task
     def research_topic(self) -> Task:
         return Task(
             config=self.tasks_config['research_topic'], # type: ignore[index]
-            agent=self.researcher()
+            agent=self.researcher() # type: ignore[index]
         )
     
     @task
     def generate_outline(self) -> Task:
         return Task(
             config=self.tasks_config['generate_outline'], # type: ignore[index]
-            agent=self.outliner(),
+            agent=self.outliner(), # type: ignore[index]
             output_pydantic=BookOutline
         )
     
@@ -52,5 +52,5 @@ class OutlineBookCrew:
             agents=self.agents, # Automatically created by the @agent decorator
             tasks=self.tasks, # Automatically created by the @task decorator
             process=Process.sequential,
-            verbose=True,
+            verbose=False,
         )
