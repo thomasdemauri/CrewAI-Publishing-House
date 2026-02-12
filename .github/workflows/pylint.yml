@@ -19,7 +19,7 @@ jobs:
     - name: Install dependencies
       run: |
         uv sync
-        uv run crewai run
+        uv run crewai install
         uv add pylint
     - name: Analysing the code with pylint
       run: |
