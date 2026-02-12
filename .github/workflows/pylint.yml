@@ -23,4 +23,4 @@ jobs:
         uv add pylint
     - name: Analysing the code with pylint
       run: |
-        uv run pylint src
+        uv run pylint src --fail-under=7

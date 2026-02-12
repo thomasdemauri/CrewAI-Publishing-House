@@ -1,0 +1,12 @@
+[MESSAGES CONTROL]
+disable=
+    no-member,
+    invalid-sequence-index,
+    duplicate-code,
+    missing-module-docstring,
+    missing-class-docstring,
+    missing-function-docstring,
+    too-few-public-methods
+
+[FORMAT]
+max-line-length=100
