@@ -4,9 +4,9 @@ import re
 from typing import List
 from uuid import uuid4
 from crewai.flow.flow import Flow, listen, start
+from docx import Document
 from dotenv import load_dotenv
 from pydantic import BaseModel, Field
-
 from publishing_house.crews.outline_book_crew.outline_book_crew import OutlineBookCrew
 from publishing_house.crews.write_book_crew.write_book_crew import WriteBookCrew
 from publishing_house.types import ChapterContent, ChapterOutline
@@ -81,22 +81,22 @@ class BookFlow(Flow[BookState]):
 
 
     @listen(write_chapters)
-    async def join_and_save_chapter(self):
-        book_content = ""
+    def save_as_a_document(self):
+        doc = Document()
+
+        safe_title = self._sanitize_filename(self.state.title)
+        file_path = f"./{safe_title}.docx"
 
         for chapter in self.state.book:
-            print(f"Joining chapter: {chapter.title}\n")
-            print(f"Chapter content: {chapter.content}\n")
-            book_content += f"# {chapter.title}\n\n{chapter.content}\n\n"
+            title = chapter.title
+            content = chapter.content
 
-        book_title = self.state.title
-        safe_title = self._sanitize_filename(book_title)
-        filename = f"./{safe_title}.md"
+            doc.add_heading(title, level=1)
+            doc.add_paragraph(content)
 
-        with open(filename, "w", encoding="utf-8") as f:
-            f.write(book_content)
+        doc.save(file_path)
+        return file_path
 
-        print(f"Book saved as {filename}")
 
 
 def run():
